@@ -29,6 +29,10 @@ jobs:
       # every build is what makes a checked-in derivative safe: if the server's contract moved,
       # this fails here rather than letting the package describe an API that no longer exists.
       - run: npm run contracts:check
+        env:
+          # Authenticated, or the matrix exhausts the unauthenticated 60/hour limit for the
+          # runner's IP and one job fails with a 403 that looks like a flaky download.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: npm run typecheck
       - run: npm test
@@ -38,3 +42,5 @@ jobs:
       # separate from `npm test` because it needs the network — a failure here means the wire
       # moved, not that this package is broken.
       - run: npm run test:wire
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

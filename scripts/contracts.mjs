@@ -29,15 +29,28 @@ const header = (source) => `// Synced from ${REPO}/${source} — do not edit by 
 
 `;
 
+/**
+ * Headers for the GitHub contents API.
+ *
+ * WARNING: authenticate in CI. Unauthenticated requests are limited to 60 per hour **per IP**, and
+ * a matrix build blows through that — each job fetches every fixture separately, from the same
+ * runner IP. The symptom is a 403 on an arbitrary file in whichever job runs second, which reads
+ * like a flaky download rather than a rate limit. `GITHUB_TOKEN` is injected by the workflow.
+ */
+function githubHeaders() {
+  const headers = { accept: 'application/vnd.github.raw', 'cache-control': 'no-cache' };
+  const token = process.env.GITHUB_TOKEN;
+  if (token) headers.authorization = `Bearer ${token}`;
+  return headers;
+}
+
 async function fetchContract(SOURCE) {
   // WARNING: not raw.githubusercontent.com. That is served through a CDN which can hand back a
   // stale copy for a while after a push — long enough for `--check` to compare against the
   // previous contract and report a match that is not true. The contents API returns the blob for
   // the ref directly.
   const url = `https://api.github.com/repos/${REPO}/contents/${SOURCE}?ref=${REF}`;
-  const response = await fetch(url, {
-    headers: { accept: 'application/vnd.github.raw', 'cache-control': 'no-cache' },
-  });
+  const response = await fetch(url, { headers: githubHeaders() });
   if (!response.ok) {
     throw new Error(`Fetching ${SOURCE}@${REF} failed: ${response.status} ${response.statusText}`);
   }
