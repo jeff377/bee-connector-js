@@ -15,16 +15,21 @@ import { fileURLToPath } from 'node:url';
 
 const REPO = 'jeff377/bee-library';
 const REF = process.env.BEE_CONTRACTS_REF ?? 'main';
-const SOURCE = 'wire-contracts/messages.d.ts';
 
-const target = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'contracts', 'messages.ts');
+const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'contracts');
 
-const HEADER = `// Synced from ${REPO}/${SOURCE} — do not edit by hand.
+/** Source path in the framework repository → local file. */
+const FILES = [
+  { source: 'wire-contracts/messages.d.ts', target: join(outDir, 'messages.ts') },
+  { source: 'wire-contracts/type-names.ts', target: join(outDir, 'type-names.ts') },
+];
+
+const header = (source) => `// Synced from ${REPO}/${source} — do not edit by hand.
 // Update with \`npm run contracts:update\`; CI fails if this file drifts from the source.
 
 `;
 
-async function fetchContract() {
+async function fetchContract(SOURCE) {
   // WARNING: not raw.githubusercontent.com. That is served through a CDN which can hand back a
   // stale copy for a while after a push — long enough for `--check` to compare against the
   // previous contract and report a match that is not true. The contents API returns the blob for
@@ -36,23 +41,36 @@ async function fetchContract() {
   if (!response.ok) {
     throw new Error(`Fetching ${SOURCE}@${REF} failed: ${response.status} ${response.statusText}`);
   }
-  return HEADER + (await response.text());
+  return header(SOURCE) + (await response.text());
 }
 
-const expected = await fetchContract();
+const checking = process.argv.includes('--check');
+let drifted = 0;
 
-if (process.argv.includes('--check')) {
+for (const { source, target } of FILES) {
+  const expected = await fetchContract(source);
+
+  if (!checking) {
+    await writeFile(target, expected);
+    console.log(`Updated ${target} from ${REPO}@${REF}.`);
+    continue;
+  }
+
   const actual = await readFile(target, 'utf8').catch(() => null);
   if (actual !== expected) {
+    console.error(`${source} differs from ${REPO}@${REF}.`);
+    drifted++;
+  }
+}
+
+if (checking) {
+  if (drifted > 0) {
     console.error(
-      `The committed contract differs from ${REPO}@${REF}.\n` +
-        'The API contract moved. Run `npm run contracts:update`, read the diff — a renamed or ' +
-        'removed property is a breaking change for this package — then commit it.',
+      '\nThe API contract moved. Run `npm run contracts:update`, read the diff — a renamed or ' +
+        'removed property, or a moved namespace, is a breaking change for this package — then ' +
+        'commit it.',
     );
     process.exit(1);
   }
-  console.log(`Contract matches ${REPO}@${REF}.`);
-} else {
-  await writeFile(target, expected);
-  console.log(`Updated ${target} from ${REPO}@${REF}.`);
+  console.log(`Contracts match ${REPO}@${REF}.`);
 }

@@ -46,6 +46,12 @@ export type {
 export { JsonRpcTransport } from './transport/client.js';
 export type { CallOptions, TransportOptions } from './transport/client.js';
 
+export { BeeClient } from './connectors/client.js';
+export { SystemConnector } from './connectors/system.js';
+export { FormConnector } from './connectors/form.js';
+export { WireTypeNames } from './contracts/type-names.js';
+export type { WireTypeName } from './contracts/type-names.js';
+
 /**
  * The API contract, generated from the framework's message types and synced into this repository.
  * `npm run contracts:check` (run in CI) fails if it drifts from the source.

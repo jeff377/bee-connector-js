@@ -5,9 +5,9 @@ API, including the **encrypted** payload pipeline.
 
 ## Status
 
-**Early — the payload pipeline is landing first.** The cryptographic layer is implemented and
-verified against payloads produced by the .NET server; the connector API on top of it is not built
-yet.
+**Usable, pre-1.0.** Every layer is implemented and verified against the .NET server — the
+cryptographic pipeline against payloads it produced, the codec against its published wire fixtures,
+and the whole stack end to end against a running host. The API surface may still change before 1.0.
 
 | Layer | State |
 |-------|-------|
@@ -15,7 +15,8 @@ yet.
 | RSA handshake | ✅ implemented, cross-verified in both directions |
 | JSON body codec (wire value envelopes) | ✅ verified against the framework's wire fixtures |
 | JSON-RPC transport (envelope, pipeline, HTTP) | ✅ |
-| Typed connectors (`login`, `getList`, …) | ⬜ next |
+| Typed connectors (`login`, `getList`, …) | ✅ |
+| API contract types, generated from the framework | ✅ synced, CI-checked |
 
 ## Why this exists
 
@@ -39,6 +40,37 @@ Any runtime with Web Crypto and `CompressionStream`: current browsers, or Node 1
 
 ```sh
 npm install bee-connector
+```
+
+## Usage
+
+```ts
+import { BeeClient } from 'bee-connector';
+
+const client = new BeeClient({ endpoint: 'https://host/api', apiKey: '…' });
+
+// Signs in, completes the RSA handshake, and installs the session key.
+// Every call after this encrypts without being asked.
+await client.system.login('demo', 'secret');
+
+const employees = await client.form('Employee').getList({ selectFields: 'sys_id,sys_name' });
+
+await client.system.logout();
+```
+
+Values inside a filter are `object`-typed on the server, so mark the ones JavaScript cannot tell
+apart — an unmarked decimal would arrive as a string:
+
+```ts
+import { wire } from 'bee-connector';
+
+await client.form('Employee').getList({
+  filter: {
+    kind: 'Group',
+    operator: 'And',
+    nodes: [{ kind: 'Condition', fieldName: 'amount', operator: 'GreaterThan', value: wire.decimal('100') }],
+  },
+});
 ```
 
 ## Development
