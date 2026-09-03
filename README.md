@@ -62,12 +62,19 @@ This repository contains no server. To exercise the connector end to end, start 
 quick-start host from the [bee-library](https://github.com/jeff377/bee-library) repository:
 
 ```sh
-cd samples/QuickStart.Server
-dotnet run
+# terminal 1 — in the bee-library checkout
+cd samples/QuickStart.Server && dotnet run
+
+# terminal 2 — here
+npm run smoke
 ```
 
-Note that the unit tests do **not** need it: wire compatibility is verified against fixed vectors
-produced by the .NET implementation, so `npm test` runs offline.
+`npm run smoke` calls `System.Ping` twice: once as a Plain payload, once encoded through the JSON
+codec. The second is the one that matters — the body is produced here, gzipped, decoded by the
+server's `json` codec, and answered in the same codec.
+
+Note that the unit tests do **not** need a server: wire compatibility is verified against fixed
+vectors produced by the .NET implementation, so `npm test` runs offline.
 
 ## License
 
