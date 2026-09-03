@@ -14,7 +14,8 @@ yet.
 | AES-CBC-HMAC, gzip, byte helpers | ✅ implemented, cross-verified against .NET output |
 | RSA handshake | ✅ implemented, cross-verified in both directions |
 | JSON body codec (wire value envelopes) | ✅ verified against the framework's wire fixtures |
-| JSON-RPC transport and connectors | ⬜ next |
+| JSON-RPC transport (envelope, pipeline, HTTP) | ✅ |
+| Typed connectors (`login`, `getList`, …) | ⬜ next |
 
 ## Why this exists
 

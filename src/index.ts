@@ -27,3 +27,21 @@ export {
   wire,
 } from './codec/wire-value.js';
 export type { TaggedWireValue, WireValue, WireValueCodeValue } from './codec/wire-value.js';
+
+export { encodeBody, decodeBody } from './codec/json-body.js';
+export {
+  JSON_CODEC,
+  JsonRpcError,
+  PayloadFormat,
+  buildPayload,
+  restorePayload,
+} from './transport/envelope.js';
+export type {
+  ApiPayload,
+  JsonRpcErrorBody,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  PayloadFormatValue,
+} from './transport/envelope.js';
+export { JsonRpcTransport } from './transport/client.js';
+export type { CallOptions, TransportOptions } from './transport/client.js';
