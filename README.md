@@ -13,8 +13,8 @@ yet.
 |-------|-------|
 | AES-CBC-HMAC, gzip, byte helpers | ✅ implemented, cross-verified against .NET output |
 | RSA handshake | ✅ implemented, cross-verified in both directions |
-| JSON body codec (wire value envelopes) | ⬜ next |
-| JSON-RPC transport and connectors | ⬜ |
+| JSON body codec (wire value envelopes) | ✅ verified against the framework's wire fixtures |
+| JSON-RPC transport and connectors | ⬜ next |
 
 ## Why this exists
 
@@ -44,10 +44,16 @@ npm install bee-connector
 
 ```sh
 npm install
-npm test          # vitest
+npm test          # vitest, offline
 npm run typecheck # tsc --noEmit
 npm run build     # tsup (JS) + tsc (declarations)
+npm run test:wire # fetches the framework's wire fixtures, then verifies the codec against them
 ```
+
+`npm test` never touches the network: wire compatibility is checked against fixed vectors produced
+by the .NET implementation. `npm run test:wire` is the broader check — it downloads the framework's
+published wire fixtures and round-trips every one of them. Those fixtures are **not committed
+here**; a copy would be a second authority for the wire format, and it would drift.
 
 ### Testing against a real backend
 

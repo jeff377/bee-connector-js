@@ -144,3 +144,7 @@ vite.config.ts.timestamp-*
 
 # macOS
 .DS_Store
+
+# Wire fixtures are fetched from the framework repository, never committed —
+# a copy here would be a second authority for the wire format, and it would drift.
+test/fixtures/

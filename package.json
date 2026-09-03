@@ -40,9 +40,12 @@
     "build": "tsup && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fetch-fixtures": "node scripts/fetch-fixtures.mjs",
+    "test:wire": "npm run fetch-fixtures && vitest run --config vitest.wire.config.ts"
   },
   "devDependencies": {
+    "@types/node": "^26.4.1",
     "tsup": "^8.5.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"

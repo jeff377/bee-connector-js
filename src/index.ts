@@ -17,3 +17,13 @@ export {
 export type { HandshakeKeyPair } from './crypto/rsa.js';
 export { concat, fromBase64, fromUtf8, toBase64, utf8 } from './crypto/bytes.js';
 export type { Bytes } from './crypto/bytes.js';
+
+export {
+  DB_NULL,
+  WireValueCode,
+  decodeWireValue,
+  encodeWireValue,
+  tag,
+  wire,
+} from './codec/wire-value.js';
+export type { TaggedWireValue, WireValue, WireValueCodeValue } from './codec/wire-value.js';
