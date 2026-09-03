@@ -8,5 +8,12 @@
 
 export { decrypt, encrypt } from './crypto/aes-cbc-hmac.js';
 export { gunzip, gzip } from './crypto/gzip.js';
+export {
+  decryptSessionKey,
+  decryptWithPrivateKey,
+  generateHandshakeKeyPair,
+  importPrivateKeyPem,
+} from './crypto/rsa.js';
+export type { HandshakeKeyPair } from './crypto/rsa.js';
 export { concat, fromBase64, fromUtf8, toBase64, utf8 } from './crypto/bytes.js';
 export type { Bytes } from './crypto/bytes.js';

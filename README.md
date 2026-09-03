@@ -12,8 +12,8 @@ yet.
 | Layer | State |
 |-------|-------|
 | AES-CBC-HMAC, gzip, byte helpers | ✅ implemented, cross-verified against .NET output |
-| RSA handshake | ⬜ next |
-| JSON body codec (wire value envelopes) | ⬜ |
+| RSA handshake | ✅ implemented, cross-verified in both directions |
+| JSON body codec (wire value envelopes) | ⬜ next |
 | JSON-RPC transport and connectors | ⬜ |
 
 ## Why this exists
