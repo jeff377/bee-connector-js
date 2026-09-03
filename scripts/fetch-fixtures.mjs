@@ -34,7 +34,11 @@ async function main() {
   await mkdir(outDir, { recursive: true });
   await Promise.all(
     files.map(async (file) => {
-      const body = await fetch(file.download_url);
+      // Via the contents API rather than `download_url`: that points at the raw CDN, which can
+      // serve a stale copy for a while after a push.
+      const body = await fetch(`${file.url}`, {
+        headers: { accept: 'application/vnd.github.raw', 'cache-control': 'no-cache' },
+      });
       if (!body.ok) throw new Error(`Downloading ${file.name} failed: ${body.status}`);
       await writeFile(join(outDir, file.name), await body.text());
     }),

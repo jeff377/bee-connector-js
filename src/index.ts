@@ -45,3 +45,13 @@ export type {
 } from './transport/envelope.js';
 export { JsonRpcTransport } from './transport/client.js';
 export type { CallOptions, TransportOptions } from './transport/client.js';
+
+/**
+ * The API contract, generated from the framework's message types and synced into this repository.
+ * `npm run contracts:check` (run in CI) fails if it drifts from the source.
+ *
+ * Exported under a namespace rather than flattened: it carries about ninety type names, and a
+ * collision with this package's own exports would be dropped silently by a star re-export rather
+ * than reported. `Contracts.LoginRequest` also reads as what it is — the server's shape, not ours.
+ */
+export type * as Contracts from './contracts/messages.js';

@@ -24,6 +24,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # The committed API contract is generated from the framework's message types. Checking it on
+      # every build is what makes a checked-in derivative safe: if the server's contract moved,
+      # this fails here rather than letting the package describe an API that no longer exists.
+      - run: npm run contracts:check
+
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
