@@ -29,7 +29,17 @@ export interface DataColumnShape {
   defaultValue: unknown;
 }
 
-/** A row, carrying its state and the versions that state implies. */
+/**
+ * A row, carrying its state and the versions that state implies.
+ *
+ * A cell carries no discriminator: its type comes from the matching `DataColumnShape.type`
+ * in the same document. Two of those types do not arrive as JSON numbers —
+ * **`Decimal` and `Int64` (and `UInt64`) are JSON strings**, for the same reason the
+ * object envelope quotes them: a JSON number is a double to every JavaScript reader,
+ * which holds neither a decimal's precision nor an integer past 2^53, and `JSON.parse`
+ * has already lost it before your code runs. Read those cells by the column's `type`,
+ * not by `typeof`.
+ */
 export interface DataRowShape {
   state: 'Unchanged' | 'Added' | 'Modified' | 'Deleted';
   current?: Record<string, unknown>;
@@ -71,8 +81,6 @@ export type LoginEvent = 'LoginSucceeded' | 'LoginFailed' | 'LockedOut' | 'Logou
 
 export type NumberKind = 'None' | 'Quantity' | 'Weight' | 'Amount' | 'Percent' | 'UnitPrice' | 'Cost' | 'ExchangeRate';
 
-export type PackageDelivery = 'Url' | 'Api';
-
 export type PayloadFormat = 'Plain' | 'Encoded' | 'Encrypted';
 
 export type SortDirection = 'Asc' | 'Desc';
@@ -100,16 +108,6 @@ export interface ApiKeySummary {
 export interface CashRoundingItem {
   currencyCode?: string;
   unit: number;
-}
-
-export interface CheckPackageUpdateRequest {
-  parameters?: Parameter[];
-  queries?: PackageUpdateQuery[];
-}
-
-export interface CheckPackageUpdateResponse {
-  parameters?: Parameter[];
-  updates?: PackageUpdateInfo[];
 }
 
 export interface CompanyInfo {
@@ -393,25 +391,6 @@ export interface GetNewDataResponse {
   parameters?: Parameter[];
 }
 
-export interface GetPackageRequest {
-  appId?: string;
-  channel?: string;
-  componentId?: string;
-  fileId?: string;
-  parameters?: Parameter[];
-  platform?: string;
-  version?: string;
-}
-
-export interface GetPackageResponse {
-  content?: string;
-  fileName?: string;
-  fileSize: number;
-  packageUrl?: string;
-  parameters?: Parameter[];
-  sha256?: string;
-}
-
 export interface GetTopApiMethodsRequest {
   fromUtc?: string;
   parameters?: Parameter[];
@@ -475,27 +454,6 @@ export interface LogoutResponse {
 export interface NumberFormatItem {
   decimals: number;
   kind: NumberKind;
-}
-
-export interface PackageUpdateInfo {
-  appId?: string;
-  componentId?: string;
-  delivery: PackageDelivery;
-  latestVersion?: string;
-  mandatory: boolean;
-  packageSize: number;
-  packageUrl?: string;
-  releaseNotes?: string;
-  sha256?: string;
-  updateAvailable: boolean;
-}
-
-export interface PackageUpdateQuery {
-  appId?: string;
-  channel?: string;
-  componentId?: string;
-  currentVersion?: string;
-  platform?: string;
 }
 
 export interface PagingInfo {
