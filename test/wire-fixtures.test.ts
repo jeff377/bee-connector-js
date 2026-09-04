@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { decodeWireValue, encodeWireValue, tag, type WireValueCodeValue } from '../src/codec/wire-value.js';
+import { WireValueCode, decodeWireValue, encodeWireValue, tag, type WireValueCodeValue } from '../src/codec/wire-value.js';
 
 /**
  * Verifies this package against the golden samples published by the framework repository.
@@ -44,8 +44,9 @@ describe('wire fixtures', () => {
         .filter((v): v is [number, unknown] => Array.isArray(v))
         .map(([code]) => code),
     );
-    // DataTable inside an object member has no sample and is not supported yet; everything else
-    // the framework can put on this wire is represented.
+    // Every discriminator the framework can put on this wire now has a sample, DataTable included
+    // — the sample arrived before the support did, which is what the `value-datatable` assertion
+    // below is about.
     expect(codes.size).toBeGreaterThanOrEqual(20);
   });
 
@@ -62,6 +63,23 @@ describe('wire fixtures', () => {
       }
 
       const [code] = raw as [WireValueCodeValue, unknown];
+
+      if (fixture.case === 'value-datatable') {
+        // NOT YET SUPPORTED, asserted rather than skipped.
+        //
+        // A DataTable is the core cross-layer DTO of the framework — an ERP form's data *is* a
+        // DataTable — so this gap is the line between "can render a form" and "cannot". See
+        // docs/plans/plan-datatable-support.md.
+        //
+        // Pinning the refusal, instead of skipping the case, keeps the gap visible in the one
+        // place a developer of this package will look, and makes the day it gets implemented
+        // fail here — forcing whoever does it to come back and replace this with a real
+        // round-trip assertion. A skipped test would go quiet instead.
+        expect(code).toBe(WireValueCode.DataTable);
+        expect(() => decodeWireValue(raw)).toThrow(/DataTable .* not supported yet/);
+        return;
+      }
+
       const decoded = decodeWireValue(raw);
 
       if (fixture.case === 'value-objectarray') {
