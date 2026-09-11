@@ -220,6 +220,7 @@ export interface GetChangeDetailRequest {
 
 export interface GetChangeDetailResponse {
   changeKind: ChangeKind;
+  dataSet?: DataSet;
   fields?: RecordFieldChange[];
   isSensitive: boolean;
   logTime: string;
