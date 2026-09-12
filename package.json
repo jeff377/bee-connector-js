@@ -1,6 +1,7 @@
 {
   "name": "bee-connector",
   "version": "0.0.1",
+  "private": true,
   "description": "JavaScript/TypeScript connector for the Bee.NET JSON-RPC API, with the full encrypted payload pipeline.",
   "license": "MIT",
   "author": "jeff377",

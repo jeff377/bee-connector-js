@@ -38,9 +38,28 @@ Any runtime with Web Crypto and `CompressionStream`: current browsers, or Node 1
 
 ## Install
 
+**This package is not published to npm.** A `bee-connector` package appearing on the npm registry
+was not published by this project — do not install it. Build from source instead:
+
 ```sh
-npm install bee-connector
+git clone https://github.com/jeff377/bee-connector-js.git
+cd bee-connector-js
+npm ci
+npm run build
+npm pack   # prints the tarball name, bee-connector-<version>.tgz
 ```
+
+Then install that tarball into your own project:
+
+```sh
+npm install /path/to/bee-connector-js/bee-connector-<version>.tgz
+```
+
+Installing from the Git URL does not currently work: build output is not committed and there is no
+`prepare` script, so the installed package would have no `dist`.
+
+The package name is still `bee-connector`, so the imports below resolve to the tarball you just
+installed.
 
 ## Usage
 
